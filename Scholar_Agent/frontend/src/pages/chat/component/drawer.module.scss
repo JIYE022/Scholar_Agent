@@ -1,0 +1,46 @@
+.drawer {
+  background: #fff;
+  height: 100vh;
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  .drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 84px;
+    padding: 0 24px;
+    border-bottom: 1px solid #edf0f5;
+
+    .drawer__title {
+      flex-grow: 1;
+      align-items: center;
+      color: #202a3a;
+      display: flex;
+      font-size: 18px;
+      font-weight: 700;
+      gap: 10px;
+
+      :global(.anticon) {
+        color: #3266eb;
+        font-size: 20px;
+      }
+    }
+
+    .drawer__close {
+      color: #96a1b4;
+      font-size: 14px;
+    }
+  }
+
+  .drawer__content {
+    flex: 1;
+    padding: 24px;
+    overflow: auto;
+  }
+}

@@ -1,0 +1,68 @@
+.base-layout-footer {
+  flex-shrink: 0;
+  align-self: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+
+  .base-layout-footer__main {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 118px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: white;
+    border-radius: 20px;
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 110% -10%,
+        rgb(255 255 255 / 18%) 0 42%,
+        transparent 43%
+      ),
+      linear-gradient(130deg, #315ee8, #7338ee);
+    box-shadow: 0 12px 26px rgb(67 70 216 / 22%);
+
+    .header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .avatar {
+        background: rgb(255 255 255 / 16%);
+        border: 1px solid rgb(255 255 255 / 42%);
+        color: white;
+
+        .ant-avatar-string {
+          font-size: 18px;
+          font-weight: 700;
+        }
+      }
+
+      .username {
+        flex: 1;
+        font-size: 15px;
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .logout {
+      align-self: flex-start;
+      color: rgb(255 255 255 / 88%);
+      height: auto;
+      padding: 0;
+
+      &:hover {
+        color: white !important;
+        background: transparent !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+.com-sender {
+  background: rgb(255 255 255 / 94%);
+  border: 1px solid #e0e6f0;
+  border-radius: 22px;
+  box-shadow: 0 14px 36px rgb(45 74 120 / 12%);
+  min-height: 88px;
+  position: relative;
+
+  .ant-input {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 88px;
+    padding: 31px 154px 24px 96px;
+    resize: none;
+
+    &::placeholder {
+      color: #a5afbf;
+    }
+  }
+
+  .com-sender__actions {
+    align-items: center;
+    display: flex;
+    inset: 0;
+    justify-content: space-between;
+    padding: 0 22px;
+    pointer-events: none;
+    position: absolute;
+
+    .ant-space,
+    .ant-btn,
+    .ant-upload-wrapper {
+      pointer-events: auto;
+    }
+
+    .com-sender__actions-left {
+      max-width: 70px;
+
+      .ant-btn {
+        background: transparent;
+        color: #8796ad;
+      }
+    }
+
+    .com-sender__action--contract {
+      color: #708097;
+      max-width: 150px;
+      min-width: 38px;
+      overflow: hidden;
+
+      .document-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .com-sender__action--send {
+      background: linear-gradient(96deg, #3166e9, #6659ee) !important;
+      border: 0;
+      box-shadow: 0 8px 18px rgb(62 89 221 / 28%);
+      font-size: 17px;
+      font-weight: 600;
+      height: 50px;
+      min-width: 112px;
+
+      img {
+        height: 14px;
+        width: 11px;
+      }
+    }
+  }
+}

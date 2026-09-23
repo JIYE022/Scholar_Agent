@@ -1,0 +1,152 @@
+.base-layout {
+  padding-left: 300px;
+  min-height: 100vh;
+}
+
+.base-layout__sidebar {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+  background: #fbfcff;
+  border-right: 1px solid #e5eaf3;
+  display: flex;
+  flex-direction: column;
+
+  .base-layout__sidebar-main {
+    flex-grow: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 16px;
+  }
+
+  .base-layout__sidebar-main-content {
+    flex-grow: 1;
+    flex-shrink: 0;
+    overflow: auto;
+  }
+}
+
+.base-layout__logo {
+  min-height: 84px;
+  box-sizing: border-box;
+  padding: 16px 26px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid #e5eaf3;
+
+  .logo {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    cursor: pointer;
+    border: 0;
+    border-radius: 16px;
+    color: white;
+    font-size: 23px;
+    background: linear-gradient(145deg, #3467ef, #6559ec);
+    box-shadow: 0 8px 18px rgb(65 92 225 / 28%);
+  }
+
+  .brand-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .title {
+    color: #202a3a;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    color: #9ba6b8;
+    font-size: 13px;
+    margin-top: 2px;
+  }
+}
+
+.base-layout__nav-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 20px;
+  cursor: pointer;
+  color: white;
+  border-radius: 16px;
+  background: linear-gradient(100deg, #3166e9, #6659ee);
+  box-shadow: 0 12px 24px rgb(66 91 220 / 22%);
+
+  &:hover {
+    filter: brightness(1.03);
+  }
+
+  .base-layout__nav-header-icon {
+    font-size: 18px;
+  }
+
+  .base-layout__nav-header-title {
+    font-size: 16px;
+    color: white;
+    font-weight: 600;
+  }
+}
+
+.base-layout__section-title {
+  color: #9ca8bc;
+  font-size: 14px;
+  margin: 26px 14px 8px;
+}
+
+.base-layout__menu-item {
+  align-items: center;
+  border-radius: 12px;
+  color: #526076;
+  cursor: pointer;
+  display: flex;
+  font-size: 15px;
+  gap: 12px;
+  min-height: 46px;
+  padding: 0 16px;
+
+  .anticon {
+    color: #96a2b5;
+    font-size: 18px;
+  }
+
+  &:hover {
+    background: #f1f5fc;
+  }
+
+  &.is-active {
+    background: #edf3fd;
+    color: #2862e8;
+
+    .anticon {
+      color: #2862e8;
+    }
+  }
+}
+
+.base-layout__content {
+  min-height: 100vh;
+}
+
+@media (max-width: 1180px) {
+  .base-layout {
+    padding-left: 240px;
+  }
+
+  .base-layout__sidebar {
+    width: 240px;
+  }
+}

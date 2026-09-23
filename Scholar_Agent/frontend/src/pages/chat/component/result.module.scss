@@ -1,0 +1,129 @@
+.chat-message-result {
+  .chat-message-result__think {
+    color: #8b8b8b;
+    border-left: 2px solid #e5e5e5;
+    padding-left: 10px;
+    margin-bottom: 10px;
+  }
+  .chat-message-result__md {
+    :global {
+      .refrence-token {
+        color: var(--ant-color-primary);
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: none;
+      }
+    }
+  }
+
+  .chat-message-result__actions {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+
+    .date {
+      margin-right: 4px;
+      color: var(--ant-color-primary);
+      font-size: 12px;
+    }
+  }
+
+  .chat-message-result__quick-reply {
+    margin-top: 17px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    max-width: 100%;
+
+    .item {
+      border-radius: 40px;
+      border: 1px solid transparent;
+      box-shadow: 0px 2px 12px 0px rgba(206, 215, 218, 1.18);
+      max-width: 100%;
+
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+
+      .text {
+        text-align: left;
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #333;
+        font-size: 12px;
+      }
+
+      .arrow {
+        flex-shrink: 0;
+        color: #999;
+        font-size: 10px;
+      }
+    }
+  }
+
+  .chat-message-result__error {
+    color: var(--ant-color-error);
+  }
+
+  .external-paper-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .external-paper-card {
+    border-color: #dce6f5;
+    box-shadow: 0 3px 12px rgb(48 91 145 / 8%);
+
+    .external-paper-card__title {
+      display: inline-block;
+      max-width: 760px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .external-paper-card__meta {
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .external-paper-card__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .external-paper-card__reason {
+      color: #27364a;
+      margin-bottom: 8px;
+    }
+
+    .external-paper-card__abstract {
+      color: #667085;
+      display: -webkit-box;
+      line-height: 1.65;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+
+    .external-paper-card__links {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 12px;
+
+      span {
+        color: #8a8f99;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+    }
+  }
+}

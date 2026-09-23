@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "scholar-paper-search": {
+      "command": "docker",
+      "args": [
+        "compose",
+        "-f",
+        "D:\\学习资料\\agent_demo\\RAG\\FinInsRAG-V3\\swxy(1)\\swxy\\backend\\docker-compose.yml",
+        "exec",
+        "-T",
+        "scholar_agent_api",
+        "python",
+        "-m",
+        "mcp_servers.paper_search_server"
+      ],
+      "disabled": false,
+      "autoApprove": []
+    }
+  }
+}

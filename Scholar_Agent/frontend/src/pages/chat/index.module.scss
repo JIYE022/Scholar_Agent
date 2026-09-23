@@ -1,0 +1,94 @@
+.chat-page {
+  min-height: 100%;
+  padding: 0 36px 48px;
+  margin: 0 auto;
+
+  .chat-page__header {
+    align-items: center;
+    backdrop-filter: blur(14px);
+    background: rgb(242 246 255 / 82%);
+    border-bottom: 1px solid rgb(218 226 240 / 88%);
+    display: flex;
+    gap: 8px;
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0 -36px 30px;
+    min-height: 84px;
+    padding: 0 36px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+
+    .chat-page__header-title {
+      color: #202a3a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  :global(.chat-message) {
+    margin: 0 auto;
+    max-width: 920px;
+  }
+}
+
+.chat-composer {
+  margin: 0 auto;
+  max-width: 920px;
+}
+
+.comparison-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 10px;
+
+  :global {
+    .ant-segmented {
+      background: transparent;
+      color: #66738a;
+      padding: 0;
+    }
+
+    .ant-segmented-item {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      min-height: 36px;
+      padding: 0 6px;
+    }
+
+    .ant-segmented-item-selected {
+      background: #fff;
+      border-color: #cbdafa;
+      box-shadow: 0 4px 12px rgb(57 87 159 / 10%);
+      color: #2862e8;
+    }
+
+    .ant-segmented-thumb {
+      border-radius: 999px;
+    }
+  }
+}
+
+.comparison-toolbar__papers {
+  flex: 1;
+  min-width: 280px;
+
+  :global(.ant-select-selector) {
+    border-color: #d7e0ef !important;
+    border-radius: 12px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .comparison-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .comparison-toolbar__papers {
+    min-width: 0;
+    width: 100%;
+  }
+}
