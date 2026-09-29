@@ -1,0 +1,21 @@
+# Environment variables and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Runtime files
+**/*.log
+**/.DS_Store
+**/__pycache__/
+**/*.py[cod]
+
+# Dependencies and build output
+**/node_modules/
+**/dist/
+
+# Local editor settings
+**/.vscode/
+**/.idea/
+
+# Uploaded private documents
+Scholar_Agent/backend/app/service/core/storage/file/
