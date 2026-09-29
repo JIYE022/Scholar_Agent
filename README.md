@@ -4,7 +4,8 @@
 
 > 它支持从 OpenAlex、arXiv 检索论文，将本地论文构建为个人知识库，并基于论文原文进行带引用的问答和多论文对比，帮助用户更快完成文献调研。
 
-<img width="222" height="124" alt="Adobe Express - Video Project 2 (1)" src="https://github.com/user-attachments/assets/37e23a74-d421-42ef-be4b-10aa29390ad3" />
+<img width="2554" height="1472" alt="Adobe Express - Video Project 2 (1)" src="https://github.com/user-attachments/assets/37e23a74-d421-42ef-be4b-10aa29390ad3" />
+
 
 ## 核心能力
 
