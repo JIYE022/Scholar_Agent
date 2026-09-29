@@ -31,7 +31,7 @@ def get_chat_completion_block(session_id, question, references):
     
         # 调用模型生成回答
         completion = client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-R1-0528-Qwen3-8B",
+            model=os.getenv("CHAT_MODEL", "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"),
             messages=[{"role": "user", "content": prompt}],
             stream=False,
         )
@@ -96,7 +96,7 @@ def rerank_similarity(query: str, texts: List[str], model_name: str | None = Non
 
 
 
-def generate_embedding(text: str | List[str], api_key: str = None, base_url: str = None, model_name: str = "BAAI/bge-m3", encoding_format: str = "float", max_batch_size: int = 10):
+def generate_embedding(text: str | List[str], api_key: str = None, base_url: str = None, model_name: str | None = None, encoding_format: str = "float", max_batch_size: int = 10):
     """
     生成文本的向量嵌入
     
@@ -114,11 +114,17 @@ def generate_embedding(text: str | List[str], api_key: str = None, base_url: str
     """
     api_key = get_model_api_key()
     base_url = get_model_base_url()
+    model_name = model_name or os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
+    timeout_seconds = float(os.getenv("EMBEDDING_TIMEOUT_SECONDS", "45"))
+    max_retries = int(os.getenv("EMBEDDING_MAX_RETRIES", "2"))
+    max_batch_size = int(os.getenv("EMBEDDING_BATCH_SIZE", str(max_batch_size)))
 
     # 初始化 OpenAI 客户端
     client = OpenAI(
         api_key=api_key,
-        base_url=base_url
+        base_url=base_url,
+        timeout=timeout_seconds,
+        max_retries=max_retries,
     )
 
     # 如果是单个文本，直接处理
@@ -155,8 +161,9 @@ def generate_embedding(text: str | List[str], api_key: str = None, base_url: str
                 
             except Exception as e:
                 print(f"OpenAI API 批量请求失败 (batch {i//max_batch_size + 1}): {e}")
-                # 如果批量失败，为这一批添加空向量
-                all_embeddings.extend([None] * len(batch))
+                raise RuntimeError(
+                    f"Embedding batch {i//max_batch_size + 1} failed after retries: {e}"
+                ) from e
         
         return all_embeddings
 

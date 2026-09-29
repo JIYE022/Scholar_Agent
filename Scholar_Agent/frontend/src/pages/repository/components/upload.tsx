@@ -13,7 +13,7 @@ import { forwardRef, useImperativeHandle, useState } from 'react'
 import styles from './upload.module.scss'
 
 export type RepositoryUploadRef = {
-  submit: () => Promise<void>
+  submit: () => Promise<{ taskId: string; fileName: string }>
 }
 
 const readStatusOptions = [
@@ -44,14 +44,16 @@ export default forwardRef<RepositoryUploadRef, UploadProps>(
         )
 
         try {
-          await api.repository.upload({
+          const response = await api.repository.upload({
             file: file.originFileObj as File,
             metadata,
           })
+          const taskId = response.data.task_id
+          if (!taskId) throw new Error('后端未返回上传任务 ID')
           setFileList((prev) =>
             prev.map((item) => ({ ...item, status: 'done' })),
           )
-          window.$app.message.success('论文上传并解析完成')
+          return { taskId, fileName: file.name }
         } catch (error: any) {
           setFileList((prev) =>
             prev.map((item) => ({

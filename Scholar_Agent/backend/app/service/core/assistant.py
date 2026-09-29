@@ -26,7 +26,7 @@ def create_chat_assistant(address, api_key, name, avatar=None, dataset_ids=None,
         "avatar": avatar if avatar else "",
         "dataset_ids": dataset_ids if dataset_ids else [],
         "llm": llm if llm else {
-            "model_name": "Qwen/Qwen2.5-72B-Instruct",
+            "model_name": os.getenv("CHAT_MODEL", "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"),
             "temperature": 0.1,
             "top_p": 0.3,
             "presence_penalty": 0.2,

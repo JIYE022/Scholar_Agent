@@ -5,7 +5,6 @@ from fastapi.responses import StreamingResponse
 import os
 from dotenv import load_dotenv
 from typing import List, Optional
-from service.core.file_parse import execute_insert_process
 from service.core.api.utils.file_utils import get_project_base_directory
 from fastapi_jwt import JwtAuthorizationCredentials
 from service.core.retrieval import PaperAccessError, retrieve_content
@@ -13,7 +12,7 @@ from service.core.chat import get_chat_completion
 from service.core.conversation import ConversationContext, prepare_conversation_context
 from service.auth import access_security
 from utils import logger
-from database.knowledgebase_operations import create_paper, verify_user_knowledgebase
+from database.knowledgebase_operations import verify_user_knowledgebase
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from models.knowledgebase import KnowledgeBase
@@ -22,6 +21,7 @@ from service.quick_parse_service import quick_parse_service
 from service.document_upload_service import DocumentUploadService
 from schemas.document_upload import DocumentUploadResponse, SessionDocumentsResponse, SessionDocumentSummary
 from schemas.paper import PaperMetadataCreate
+from service.upload_task_service import create_task_id, enqueue_upload_task, get_upload_task
 import os
 
 # 加载 .env 文件
@@ -230,8 +230,8 @@ async def chat_on_docs(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )
-# 文件上传
-@router.post("/upload_files")
+# 文件上传。这里只负责校验和可靠落盘，耗时解析由 Redis 工作队列处理。
+@router.post("/upload_files", status_code=status.HTTP_202_ACCEPTED)
 async def upload_files(
     request: Request,
     session_id: Optional[str] = Query(None),
@@ -271,18 +271,19 @@ async def upload_files(
 
         # 确保 storage/file 文件夹存在
         storage_dir = os.path.join(get_project_base_directory(), "storage/file")
-        if not os.path.exists(storage_dir):
-            os.makedirs(storage_dir)
+        os.makedirs(storage_dir, exist_ok=True)
         
         # 根据 session_id 创建子文件夹
         session_dir = os.path.join(storage_dir, session_id)
-        if not os.path.exists(session_dir):
-            os.makedirs(session_dir)
+        staging_dir = os.path.join(session_dir, ".upload_tasks")
+        os.makedirs(staging_dir, exist_ok=True)
         
         # 检查文件名是否重复
         existing_files = []
         for file in files:
-            file_name = file.filename
+            file_name = os.path.basename(file.filename or "")
+            if not file_name or file_name != file.filename:
+                raise HTTPException(status_code=400, detail="文件名无效")
             # 查询数据库中是否已存在该文件名
             stmt = select(KnowledgeBase).where(
                 KnowledgeBase.user_id == user_id,
@@ -298,13 +299,15 @@ async def upload_files(
                 detail=f"以下文件已存在，请勿重复上传: {', '.join(existing_files)}"
             )
 
-        # 处理文件上传
-        successful_files = []
+        # 文件先写入独立暂存路径，避免同名任务互相覆盖；后台成功后再原子移动到正式目录。
+        queued_tasks = []
         failed_files = []
         
         for file in files:
-            file_name = file.filename
-            file_path = os.path.join(session_dir, file_name)
+            file_name = os.path.basename(file.filename or "")
+            task_id = create_task_id()
+            staging_path = os.path.join(staging_dir, f"{task_id}-{file_name}")
+            final_path = os.path.join(session_dir, file_name)
             
             try:
                 # 读取文件内容
@@ -330,75 +333,60 @@ async def upload_files(
                             failed_files.append(f"{file_name}: 不是有效的 XLS 文件格式")
                             continue
                 
-                # 保存文件到本地
-                with open(file_path, "wb") as buffer:
+                # 保存文件到任务暂存目录
+                with open(staging_path, "wb") as buffer:
                     buffer.write(file_content)
                 
                 # 验证文件大小
-                if os.path.getsize(file_path) != len(file_content):
+                if os.path.getsize(staging_path) != len(file_content):
                     failed_files.append(f"{file_name}: 文件保存失败，大小不匹配")
                     continue
-                
-                # 保存文件 URL 和 Base64 编码的文件流
-                file_url = f"{storage_dir}/{session_id}/{file_name}"
-                logger.info(f"Processing file: {file_url}")
 
-                # 尝试解析和插入文档
-                try:
-                    chunk_count = execute_insert_process(
-                        file_url, file_name, session_id,
-                        paper_metadata.model_dump() if paper_metadata else None,
-                    )
-                    logger.info(f"数据插入es成功: {file_name}")
-                    
-                    paper = create_paper(db, user_id, file_name, paper_metadata)
-                    logger.info(f"数据插入pg成功: {file_name}")
-                    
-                    successful_files.append({
-                        "paper_id": paper.id,
-                        "file_name": file_name,
-                        "chunk_count": chunk_count,
-                    })
-                    
-                except Exception as parse_error:
-                    logger.error(f"文件解析失败 {file_name}: {str(parse_error)}")
-                    failed_files.append(f"{file_name}: 文件解析失败 - {str(parse_error)}")
-                    # 删除已保存的文件
-                    if os.path.exists(file_path):
-                        os.remove(file_path)
-                    continue
+                enqueue_upload_task(
+                    task_id=task_id,
+                    user_id=user_id,
+                    session_id=session_id,
+                    file_name=file_name,
+                    file_path=staging_path,
+                    final_path=final_path,
+                    metadata=paper_metadata,
+                )
+                queued_tasks.append({
+                    "task_id": task_id,
+                    "file_name": file_name,
+                    "task_status": "queued",
+                })
+                logger.info(
+                    f"[request_id={request_id}] 文件已进入后台队列: "
+                    f"task_id={task_id}, file={file_name}"
+                )
                         
             except Exception as e:
-                logger.error(f"处理文件失败 {file_name}: {str(e)}")
-                failed_files.append(f"{file_name}: 处理失败 - {str(e)}")
+                if os.path.exists(staging_path):
+                    os.remove(staging_path)
+                logger.error(f"文件入队失败 {file_name}: {str(e)}")
+                failed_files.append(f"{file_name}: 入队失败 - {str(e)}")
                 continue
 
-        # 构建返回结果
-        if successful_files and not failed_files:
-            return {
-                "status": "success",
-                "message": "所有文件解析成功",
-                "successful_files": successful_files,
-                "total_files": len(files)
-            }
-        elif successful_files and failed_files:
-            return {
-                "status": "partial_success",
-                "message": f"部分文件解析成功，{len(successful_files)} 个成功，{len(failed_files)} 个失败",
-                "successful_files": successful_files,
-                "failed_files": failed_files,
-                "total_files": len(files)
-            }
-        else:
+        if not queued_tasks:
             raise HTTPException(
                 status_code=400,
                 detail={
                     "status": "failed",
-                    "message": "所有文件解析失败",
+                    "message": "所有文件进入处理队列失败",
                     "failed_files": failed_files,
                     "total_files": len(files)
                 }
             )
+
+        return {
+            "status": "success",
+            "message": "文件已保存，正在后台解析",
+            "task_id": queued_tasks[0]["task_id"] if len(queued_tasks) == 1 else None,
+            "tasks": queued_tasks,
+            "failed_files": failed_files,
+            "total_files": len(files),
+        }
     
     except HTTPException as e:
         logger.warning(
@@ -411,6 +399,27 @@ async def upload_files(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )
+
+
+@router.get("/upload_tasks/{task_id}")
+async def get_upload_task_status(
+    task_id: str,
+    credentials: JwtAuthorizationCredentials = Security(access_security),
+):
+    user_id = str(credentials.subject.get("user_id"))
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+
+    task = get_upload_task(task_id)
+    if not task or task.get("user_id") != user_id:
+        raise HTTPException(status_code=404, detail="上传任务不存在或已过期")
+    task.pop("user_id", None)
+
+    return {
+        "status": "success",
+        "message": task.get("message", ""),
+        "task": task,
+    }
 
 ##################################
 # 查询会话文档上传信息接口

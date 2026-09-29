@@ -2,15 +2,17 @@ from elasticsearch import Elasticsearch
 from openai import OpenAI
 import jieba
 import json
+import os
 from utils.model_config import get_model_api_key, get_model_base_url
 
 
 
 def generate_embedding(text: str, api_key: str = None, base_url: str = None,
-                       model_name: str = "BAAI/bge-m3",
+                       model_name: str | None = None,
                        encoding_format: str = "float"):
     api_key = api_key or get_model_api_key()
     base_url = base_url or get_model_base_url()
+    model_name = model_name or os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
 
     # 初始化 OpenAI 客户端
     client = OpenAI(

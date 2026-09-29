@@ -90,7 +90,7 @@ def generate_recommended_questions(user_question, retrieved_content=None, sessio
                 base_url=get_model_base_url()
             )
         completion = client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-R1-0528-Qwen3-8B",
+            model=os.getenv("CHAT_MODEL", "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"),
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
             stream=False,
@@ -166,7 +166,7 @@ def generate_session_name(user_question):
                 base_url=get_model_base_url()
             )
         completion = client.chat.completions.create(
-            model="deepseek-ai/DeepSeek-R1-0528-Qwen3-8B",
+            model=os.getenv("CHAT_MODEL", "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"),
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
             stream=False,
@@ -358,7 +358,7 @@ def get_chat_completion(
         # 创建聊天完成请求
         completion = client.chat.completions.create(
             model=os.getenv("CHAT_MODEL", "deepseek-ai/DeepSeek-R1-0528-Qwen3-8B"),
-            messages={"role": "user", "content": prompt},
+            messages=[{"role": "user", "content": prompt}],
             stream=True,
         )
 

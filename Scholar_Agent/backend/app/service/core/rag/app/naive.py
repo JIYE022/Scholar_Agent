@@ -204,7 +204,7 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
     is_english = lang.lower() == "english"  # is_english(cks)
     parser_config = kwargs.get(
         "parser_config", {
-            "chunk_token_num": 128, "delimiter": "\n!?。；！？", "layout_recognize": "DeepDOC"})
+            "chunk_token_num": 512, "delimiter": "\n!?。；！？", "layout_recognize": "DeepDOC"})
     doc = {
         "docnm_kwd": filename,
         "title_tks": rag_tokenizer.tokenize(re.sub(r"\.[a-zA-Z]+$", "", filename))
@@ -222,7 +222,7 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
 
         chunks, images = naive_merge_docx(
             sections, int(parser_config.get(
-                "chunk_token_num", 128)), parser_config.get(
+                "chunk_token_num", 512)), parser_config.get(
                 "delimiter", "\n!?。；！？"))
 
         if kwargs.get("section_only", False):
@@ -257,7 +257,7 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
     elif re.search(r"\.(txt|py|js|java|c|cpp|h|php|go|ts|sh|cs|kt|sql)$", filename, re.IGNORECASE):
         callback(0.1, "Start to parse.")
         sections = TxtParser()(filename, binary,
-                               parser_config.get("chunk_token_num", 128),
+                               parser_config.get("chunk_token_num", 512),
                                parser_config.get("delimiter", "\n!?;。；！？"))
         callback(0.8, "Finish parsing.")
 
@@ -300,12 +300,12 @@ def chunk(filename, binary=None, from_page=0, to_page=100000,
     st = timer()
     paper_chunks = structure_aware_chunks(
         sections,
-        max_tokens=int(parser_config.get("chunk_token_num", 128)),
+        max_tokens=int(parser_config.get("chunk_token_num", 512)),
         overlap_ratio=float(parser_config.get("chunk_overlap_ratio", 0.10)),
     ) if pdf_parser is not None else []
     chunks = [item.content for item in paper_chunks] if paper_chunks else naive_merge(
         sections, int(parser_config.get(
-            "chunk_token_num", 128)), parser_config.get(
+            "chunk_token_num", 512)), parser_config.get(
             "delimiter", "\n!?。；！？"))
     if kwargs.get("section_only", False):
         return chunks

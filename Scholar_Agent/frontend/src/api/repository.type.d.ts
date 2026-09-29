@@ -25,4 +25,27 @@ declare namespace API {
     user_id: string
     chunk_count: number
   }
+
+  type UploadTaskStatus = 'queued' | 'processing' | 'succeeded' | 'failed'
+
+  type UploadTask = {
+    task_id: string
+    file_name: string
+    session_id: string
+    status: UploadTaskStatus
+    stage: string
+    progress: number
+    message: string
+    created_at: string
+    updated_at: string
+    started_at?: string
+    completed_at?: string
+    error?: string
+    result?: {
+      paper_id: number
+      file_name: string
+      chunk_count: number
+      recovered?: boolean
+    }
+  }
 }

@@ -262,9 +262,22 @@ export default function Index() {
         onOk={async () => {
           setUploading(true)
           try {
-            await uploadRef.current?.submit()
+            const accepted = await uploadRef.current?.submit()
             setOpenUpload(false)
-            refresh()
+            if (accepted) {
+              window.$app.message.info(`${accepted.fileName} 已上传，正在后台解析`)
+              void api.repository
+                .waitForUploadTask(accepted.taskId)
+                .then(() => {
+                  window.$app.message.success(`${accepted.fileName} 解析并入库完成`)
+                  refresh()
+                })
+                .catch((error: any) => {
+                  window.$app.message.error(
+                    `${accepted.fileName} 处理失败：${error?.message || '未知错误'}`,
+                  )
+                })
+            }
           } catch (error: any) {
             window.$app.message.error(error?.message || '上传失败')
           } finally {

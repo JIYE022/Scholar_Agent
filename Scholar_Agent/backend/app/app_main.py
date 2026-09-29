@@ -6,10 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from router import chat_rt
 from router import user_rt
 from router import history_rt
-from router import query_debug_rt
 from router import evaluation_rt
 from router import comparison_rt
 from router import external_search_rt
+from service.upload_task_service import start_upload_worker, stop_upload_worker
 import os
 
 # 从环境变量获取 root_path
@@ -74,10 +74,19 @@ app.add_middleware(
     allow_headers=["*"],  # 允许所有头
 )
 
+
+@app.on_event("startup")
+def start_background_workers():
+    start_upload_worker()
+
+
+@app.on_event("shutdown")
+def stop_background_workers():
+    stop_upload_worker()
+
 app.include_router(chat_rt.router)
 app.include_router(user_rt.router)
 app.include_router(history_rt.router)
-app.include_router(query_debug_rt.router)
 app.include_router(evaluation_rt.router)
 app.include_router(comparison_rt.router)
 app.include_router(external_search_rt.router)

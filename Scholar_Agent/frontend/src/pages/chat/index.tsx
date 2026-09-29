@@ -65,7 +65,9 @@ export default function Index() {
     {
       manual: true,
       onSuccess(data) {
-        data.forEach((item) => {
+        let latestAssistantItem: API.ChatItem | null = null
+
+        for (const item of data) {
           if (item.user_question) {
             chat.list.push({
               id: createChatId(),
@@ -107,7 +109,7 @@ export default function Index() {
             })
             const documents = Array.from(map.values())
 
-            chat.list.push({
+            const assistantItem: API.ChatItem = {
               id: createChatId(),
               role: ChatRole.Assistant,
               type: ChatType.Document,
@@ -118,9 +120,20 @@ export default function Index() {
               recommended_questions: recommended_questions?.length
                 ? recommended_questions
                 : undefined,
-            })
+            }
+
+            chat.list.push(assistantItem)
+            latestAssistantItem = assistantItem
           }
-        })
+        }
+
+        if (latestAssistantItem) {
+          setCurrentChatItem(latestAssistantItem)
+          setDocuments(latestAssistantItem.documents ?? [])
+        } else {
+          setCurrentChatItem(null)
+          setDocuments([])
+        }
 
         setTimeout(() => {
           window.scrollTo({

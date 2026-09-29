@@ -142,7 +142,7 @@ def _split_section(paragraphs: list[tuple[str, bool]], limit: int, overlap_ratio
 
 def structure_aware_chunks(
     sections: Iterable[tuple[str, str]],
-    max_tokens: int = 128,
+    max_tokens: int = 512,
     overlap_ratio: float = 0.10,
 ) -> list[PaperChunk]:
     """Chunk within recognized paper sections using tokens and sentence overlap.
