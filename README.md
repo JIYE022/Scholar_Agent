@@ -4,7 +4,7 @@
 
 > 它支持从 OpenAlex、arXiv 检索论文，将本地论文构建为个人知识库，并基于论文原文进行带引用的问答和多论文对比，帮助用户更快完成文献调研。
 
-<img width="2554" height="1472" alt="Adobe Express - Video Project 2 (1)" src="https://github.com/user-attachments/assets/37e23a74-d421-42ef-be4b-10aa29390ad3" />
+<img width="600" height="338" alt="Video Project 3 (2)_edited" src="https://github.com/user-attachments/assets/6b6b29ff-4690-4891-a161-9b80e8d89c0a" />
 
 
 ## 核心能力
@@ -35,12 +35,6 @@ Scholar Agent 将论文检索、知识库管理、证据化问答和多论文对
 ```powershell
 cd backend
 docker compose up -d --build
-```
-
-查看后端日志：
-
-```powershell
-docker compose logs -f scholar_agent_api
 ```
 
 ### 启动前端
