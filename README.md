@@ -4,7 +4,7 @@
 
 > 它支持从 OpenAlex、arXiv 检索论文，将本地论文构建为个人知识库，并基于论文原文进行带引用的问答和多论文对比，帮助用户更快完成文献调研。
 
-<img width="600" height="338" alt="Video Project 3 (2)_edited" src="https://github.com/user-attachments/assets/6b6b29ff-4690-4891-a161-9b80e8d89c0a" />
+<img width="600" height="338" alt="Video Project 3 (2)_edited" src="https://github.com/user-attachments/assets/7e4fab6e-2ddc-47a2-898d-a4d436574b3a" />
 
 
 ## 核心能力
